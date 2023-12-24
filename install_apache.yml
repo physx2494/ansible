@@ -3,7 +3,7 @@
 - hosts: all
   become: true
   tasks:
-  - name: update remo index
+  - name: update repo index
     apt:
       update_cache: true
 
