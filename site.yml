@@ -1,24 +1,36 @@
 - hosts: all
   become: true
   pre_tasks:
+
     - name: install updates CentOS
       tags: always
       yum:
         update_cache: true
-        update_only: true
+      changed_when: false
       when: ansible_distribution == "CentOS"
+
     - name: install updates Ubuntu
       tags: always
       apt:
         update_cache: true
-        upgrade: dist
+      changed_when: false
       when: ansible_distribution == "Ubuntu"
+
+- hosts: all
+  become: true
+  tasks:
+
+   - name: add ssh key for prabhat
+     tags: always
+     authorized_key:
+      user: prabhat
+      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKUbelIwF8prSCLnbBE0NjhiYdE+9BeXlZw19GedgIZj ansible"
 
 
 - hosts: workstations
   become: true
-
   tasks:
+
   - name: install unzip
     package:
      name: unzip
@@ -36,6 +48,7 @@
 - hosts: web_servers
   become: true
   tasks:
+
     - name: install apache and php packages for Ubuntu
       tags: web,ubuntu,apache,php
       apt:
@@ -44,6 +57,7 @@
           - libapache2-mod-php
         state: latest
       when: ansible_distribution == "Ubuntu"
+
     - name: install httpd and php for CentOS
       tags: web,centos,apache,php
       yum:

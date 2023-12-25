@@ -1,0 +1,42 @@
+- hosts: all
+  become: true
+  pre_tasks:
+
+    - name: install updates CentOS
+      tags: always
+      yum:
+        update_cache: true
+        update_only: true
+      when: ansible_distribution == "CentOS"
+
+    - name: install updates Ubuntu
+      tags: always
+      apt:
+        update_cache: true
+        upgrade: dist
+      when: ansible_distribution == "Ubuntu"
+
+- hosts: all
+  become: true
+  tasks:
+
+   - name: create prabhat user
+     tags: always
+     user:
+      name: prabhat
+      groups: root
+
+   - name: add ssh key for prabhat
+     tags: always
+     authorized_key:
+      user: prabhat
+      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKUbelIwF8prSCLnbBE0NjhiYdE+9BeXlZw19GedgIZj ansible"
+
+   - name: add sudoers file for prabhat
+     tags: always
+     copy:
+       src: sudoer_prabhat
+       dest: /etc/sudoers.d/prabhat
+       owner: root
+       group: root
+       mode: 0440
